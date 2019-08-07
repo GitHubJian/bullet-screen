@@ -141,7 +141,8 @@ H5Player.prototype.setVideo = function() {
     }
 
     if(this.options.live){
-      this.player = new 
+      this.player = new  
+      ///  写到这里了
     }
   }
 }
