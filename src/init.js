@@ -4,19 +4,20 @@ import result from './result.js'
 import f from './f.js'
 import Model from './model.js'
 
-function init(s) {
-  this.b = s
+function init(options) {
+  debugger
+  this.options = options
 
-  this.i = new A()
+  this.i = new A() // 普通弹幕
 
-  this.g = new A()
+  this.g = new A() // 高级弹幕
 
   this.V = new Matrix(this.ka)
 
   this.la = {
-    1: new result(s),
-    4: new f(s),
-    5: new Model(s)
+    1: new result(options),
+    4: new f(options),
+    5: new Model(options)
   }
 
   this.H = 0
@@ -29,6 +30,7 @@ init.prototype.ka = function(a, b) {
 }
 
 init.prototype.add = function(name) {
+  debugger
   name = new function(options) {
     this.o = options.stime
     this.text = options.text
@@ -42,7 +44,7 @@ init.prototype.add = function(name) {
     this.on = false
   }(name)
 
-  if (this.b.N) {
+  if (this.options.N) {
     this.J(name)
   } else {
     this.i.push(name)
@@ -75,7 +77,7 @@ init.prototype.Ka = function(i) {
 }
 
 init.prototype.oa = function(extra) {
-  return !!extra.border || !(this.g.length >= this.b.R)
+  return !!extra.border || !(this.g.length >= this.options.R)
 }
 
 init.prototype.J = function(c) {
@@ -109,7 +111,7 @@ init.prototype.Ma = function(t) {
   for (; i < mLen; i++) {
     var o = this.g[i]
     if (o.t.update(o, t)) {
-      this.b.u(o, o.K, o.L, this.b)
+      this.options.u(o, o.K, o.L, this.options)
     } else {
       el.push(o)
     }

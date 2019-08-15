@@ -1,3 +1,5 @@
+import A from './a.js'
+
 function Promise(arg) {
   this.b = arg
 

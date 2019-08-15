@@ -1,4 +1,4 @@
-export const c = function(v) {
+const formatTime = function(v) {
   if (void 0 === v) v = 0
   var ret
 
@@ -28,11 +28,11 @@ const appendTo = function(node, parentNode) {
   return parentNode
 }
 
-export const e = function(node, className) {
+const hasClass = function(node, className) {
   return (' ' + node.className + ' ').indexOf(' ' + className + '  ') > -1
 }
 
-export const g = function(el, event, fn) {
+const addEvent = function(el, event, fn) {
   if (el.addEventListener) {
     return void el.addEventListener(event, fn, false)
   }
@@ -53,7 +53,7 @@ export const g = function(el, event, fn) {
   }
 }
 
-export const d = function(item) {
+const offset = function(item) {
   var x = 0
   var y = 0
 
@@ -90,5 +90,9 @@ export const b = function(node) {
 }
 
 export default {
-  appendTo
+  formatTime,
+  appendTo,
+  addEvent,
+  offset,
+  hasClass
 }

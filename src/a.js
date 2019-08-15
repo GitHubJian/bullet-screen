@@ -29,7 +29,7 @@ A.prototype.C = function(e, k) {
   var high = this.length - 1
   var r = 0
 
-  for (; low <= height; ) {
+  for (; low <= high; ) {
     if (
       (r++,
       0 <= k(e, this[(mid = Math.floor((low + high + 1) / 2)) - 1]) &&

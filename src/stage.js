@@ -1,7 +1,8 @@
 import extend from './extend.js'
 import init from './init.js'
 import options from './options.js'
-import Module from './module.js'
+import CmtFile from './cmtFile.js'
+import Connection from './connection.js'
 
 function Stage(d) {
   var i
@@ -77,6 +78,7 @@ Stage.prototype.U = function() {
     var query = this
 
     window.requestAnimationFrame(function() {
+      debugger
       query.U()
     })
   }
@@ -166,19 +168,20 @@ Stage.prototype.addCmt = Stage.prototype.pa = function(item) {
   )
 }
 
-Stage.prototype.loadCmtFile = Stage.prototype.Ja = function(type, i) {
-  var x = new Module()
-  var Obj = this
+Stage.prototype.loadCmtFile = function(cmtFileUri, callback) {
+  var file = new CmtFile()
+  var self = this
 
-  x.complete = function() {
-    var i = 0
-    for (; i < x.i.length; i++) {
-      if (0 != x.i[i].text.replace(/\r/g, '').length) {
-        Obj.m.add(x.i[i])
+  file.complete = function() {
+    var k = 0
+    for (; k < file.i.length; k++) {
+      if (0 != file.i[k].text.replace(/\r/g, '').length) {
+        self.m.add(file.i[k])
       }
     }
   }
-  x.load(type, i)
+
+  file.load(cmtFileUri, callback)
 }
 
 Stage.prototype.sendCmt = Stage.prototype.Pa = function(
@@ -228,6 +231,15 @@ Stage.prototype.config = function() {
   return this.a
 }
 
-Stage.prototype.connect = function(uri, cb, wait) {}
+Stage.prototype.connect = function(uri, callback, wait) {
+  new Connection(
+    uri,
+    function(res) {
+      return res
+    },
+    callback,
+    wait
+  ).ba()
+}
 
 export default Stage

@@ -1,128 +1,113 @@
-<html>
-  <body>
-    <div
-      id="test"
-      class="comment-layer"
-      style="width:500px;height: 300px;background:red;"
-    ></div>
+<html style="font-size: 67.5px;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="user-scalable=no" />
+    <meta http-equiv="Pragma" content="no-cache" />
 
-    <!-- <div class="player-container">
-      <div class="dummy"></div>
-      <div class="player-box">
-        <video
-          width="100%"
-          height="100%"
-          webkit-playsinline
-          playsinline
-        ></video>
-        <div class="display">
-          <div class="input-bar">
-            <input
-              class="text-input"
-              type="text"
-              placeholder="\u8bf7\u5728\u8fd9\u91cc\u8f93\u5165\u5f39\u5e55"
-            /><button class="send-btn">\u53d1\u9001</button>
-          </div>
-          <div class="control-bar hide">
-            <span class="control-btn btn-play"
-              ><i class="player-icon icon-play"></i></span
-            ><span class="control-btn btn-pause hide"
-              ><i class="player-icon icon-pause"></i
-            ></span>
-            <div class="time-container">
-              <span class="control-text time-current-text">00:00</span>
-              <span class="control-time-split"></span>
-              <span class="control-text time-total-text">24:00</span>
-            </div>
-            <div class="right">
-              <span class="control-btn btn-mute"
-                ><i class="player-icon icon-mute"></i></span
-              ><span class="control-btn btn-unmute hide"
-                ><i class="player-icon icon-unmute"></i></span
-              ><span class="control-volume-slider"></span
-              ><span class="control-btn btn-comment active"
-                ><i class="player-icon icon-comment"></i></span
-              ><span class="control-btn btn-repeat"
-                ><i class="player-icon icon-repeat"></i></span
-              ><span class="control-btn btn-widescreen"
-                ><i class="player-icon icon-widescreen"></i></span
-              ><span class="control-btn btn-fullscreen active"
-                ><i class="player-icon icon-fullscreen"></i
-              ></span>
-            </div>
-            <div class="control-slider"></div>
-          </div>
-          <div class="comment-layer"></div>
-          <div class="load-layer">
-            <img /><i class="player-icon icon-preview"></i>
-          </div>
-          <div class="state-icon">
-            <i class="buff-icon"></i> <i class="pause-icon"></i>
-            <i class="play-icon"></i>
-          </div>
-        </div>
-      </div>
-    </div> -->
+    <style>
+      .bofqi {
+        height: 607px;
+      }
+    </style>
+    <link rel="stylesheet" href="/test/index.css" />
+
+    <script type="text/javascript">
+      !(function(t, e) {
+        'use strict'
+        var i = {}
+        !(function() {
+          var n = e.querySelector('meta[name="viewport"]'),
+            a = e.querySelector('meta[name="hotcss"]'),
+            r = t.devicePixelRatio || 1,
+            d = 540,
+            m = 0
+          if (((r = r >= 3 ? 3 : r >= 2 ? 2 : 1), a)) {
+            var s = a.getAttribute('content')
+            if (s) {
+              var c = s.match(/initial\-dpr=([\d\.]+)/)
+              c && (r = parseFloat(c[1]))
+              var o = s.match(/max\-width=([\d\.]+)/)
+              o && (d = parseFloat(o[1]))
+              var u = s.match(/design\-width=([\d\.]+)/)
+              u && (m = parseFloat(u[1]))
+            }
+          }
+          e.documentElement.setAttribute('data-dpr', r),
+            (i.dpr = r),
+            e.documentElement.setAttribute('max-width', d),
+            (i.maxWidth = d),
+            m && e.documentElement.setAttribute('design-width', m),
+            (i.designWidth = m)
+          var l = 1 / r,
+            h =
+              'width=device-width, initial-scale=' +
+              l +
+              ', minimum-scale=' +
+              l +
+              ', maximum-scale=' +
+              l +
+              ', user-scalable=no'
+          n
+            ? n.setAttribute('content', h)
+            : ((n = e.createElement('meta')).setAttribute('name', 'viewport'),
+              n.setAttribute('content', h),
+              e.head.appendChild(n))
+        })(),
+          (i.px2rem = function(t, e) {
+            return (
+              e || (e = parseInt(i.designWidth, 10)),
+              (320 * parseInt(t, 10)) / e / 20
+            )
+          }),
+          (i.rem2px = function(t, e) {
+            return e || (e = parseInt(i.designWidth, 10)), (20 * t * e) / 320
+          }),
+          (i.mresize = function() {
+            var n =
+              e.documentElement.getBoundingClientRect().width || t.innerWidth
+            if (
+              (i.maxWidth && n / i.dpr > i.maxWidth && (n = i.maxWidth * i.dpr),
+              !n)
+            )
+              return !1
+            ;(e.documentElement.style.fontSize = (20 * n) / 320 + 'px'),
+              i.callback && i.callback()
+          }),
+          i.mresize(),
+          t.addEventListener(
+            'resize',
+            function() {
+              clearTimeout(i.tid), (i.tid = setTimeout(i.mresize, 33))
+            },
+            !1
+          ),
+          t.addEventListener('load', i.mresize, !1),
+          setTimeout(function() {
+            i.mresize()
+          }, 333),
+          (t.hotcss = i)
+      })(window, document)
+    </script>
+  </head>
+
+  <body>
+    <div id="bofqi" class="bofqi"></div>
 
     <script type="module">
-      import fn from '../src/initComment.js'
+      import H5Player from '../src/h5Player.js'
 
-      var f = new fn(document.getElementById('test'))
-      f.start_video()
+      var h5Player = new H5Player()
 
-      // var notBlockList = {
-      //           browser: [],
-      //           bsource: ['iqiyi_video_app', 'qqbrowser_app', 'wechat', 'qq', 'bdts', 'bdbox', 'baidu_aladdin', 'seo']
-      //         }
+      var options = {
+        danmaku_number: Number(333) > 10000 ? 30 : 150,
+        get_from_local: true,
+        comment: '/assert/107835490.xml',
+        image: '/assert/107835490-1-6.jpg_400x300.jpg',
+        video_url: '/assert/107835490-1-6.mp4',
+        preload: 'auto'
+      }
 
-      //         function addLimit() {
-      //           var r = notBlockList.browser
-      //           for (var i = 0; i < r.length; i++) {
-      //             var q = r[i]
-      //             if (window.browser.version[q]) {
-      //               return false
-      //             }
-      //           }
-      //           var bs = notBlockList.bsource
-      //           var bsource = window.bsource
-      //           for (var i = 0; i < bs.length; i++) {
-      //             var q = bs[i]
-      //             if (bsource === q) {
-      //               return false
-      //             }
-      //           }
-
-      //           return true
-      //         }
-
-      //         var inBlockList = addLimit()
-
-      //         function videoBeyound6min () {
-      //           return Number(69) > 360
-      //         }
-
-      //         var bofqi = document.querySelector('#bofqi')
-      //         var player = new window.BiliH5Player()
-
-      //         var options = {
-      //           danmaku_number: Number(333) > 10000 ? 30 : 150,
-      //           get_from_local: true,
-      //           comment: '//comment.bilibili.com/' + 108842937 + '.xml',
-      //           image: '//i0.hdslb.com/bfs/archive/8ed535876b722bc4044dde26607af1308c27fb6b.jpg_400x300.jpg',
-      //           video_url: '//upos-hz-mirrorcosu.acgvideo.com/upgcxcode/37/29/108842937/108842937-1-6.mp4?e=ig8euxZM2rNcNbRM7WdVhoM17wUVhwdEto8g5X10ugNcXBB_&deadline=1565182807&gen=playurl&nbs=1&oi=611226567&os=cosu&platform=html5&trid=0bfbe1a03279427b8b0b73819fddbcd2&uipk=5&upsig=7a0facf1efadc255d85fa3e0693a4495&uparams=e,deadline,gen,nbs,oi,os,platform,trid,uipk&mid=0',
-      //           preload: 'auto'
-      //         }
-
-      //         if (inBlockList && videoBeyound6min() && true) {
-      //           options.max_duration = 360
-      //         }
-
-      //         player.create(options)
-      //         window.player = player
-
-      //         if (window.performance && window.performance.timing) {
-      //           window.performance.timing.firstscreenfinish = new Date().getTime()
-      //         }
+      h5Player.create(options)
     </script>
   </body>
 </html>

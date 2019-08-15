@@ -1,0 +1,228 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.bofqi {
+  height: 9.00267rem;
+}
+
+.player-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+
+  .dummy {
+    margin-top: 62.5%;
+  }
+
+  .player-box {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+
+    video {
+      background-color: #000;
+      display: none;
+
+      &.show {
+        display: block;
+      }
+    }
+
+    .display {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      .input-bar {
+        position: absolute;
+        display: none;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2.6665rem;
+        background: hsla(0, 0%, 100%, 0.6);
+
+        &.hide {
+          display: none;
+        }
+
+        .text-input {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          width: 78%;
+          margin: 0.33331rem;
+          border-style: none;
+          border-width: 0;
+          font-size: 0.93327rem;
+          line-height: 0.93327rem;
+        }
+
+        .send-btn {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          width: 20%;
+          margin: 0.33331rem;
+          border: 0 none #fff;
+          background-color: #0ad;
+          color: #fff;
+          font-size: 0.93327rem;
+          line-height: 0.93327rem;
+          font-weight: 700;
+        }
+      }
+
+      .control-bar {
+        position: absolute;
+        z-index: 2;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1.87733rem;
+        border: 0 solid #e2e2e2;
+        background-color: rgba(0, 0, 0, 0.5);
+        font-size: 0;
+        text-align: left;
+        opacity: 1;
+
+        &.hide {
+          visibility: hidden;
+          opacity: 0;
+        }
+
+        .control-btn {
+          height: 1.024rem;
+          margin-top: 0.42667rem;
+          background-color: transparent;
+          color: #585858;
+          width: 1.024rem;
+          margin-left: 1.024rem;
+
+          &.btn-play {
+            width: 2.6665rem;
+            display: none;
+          }
+        }
+      }
+
+      .comment-layer {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .load-layer {
+        display: block;
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(60, 60, 60, 0.5);
+        overflow: hidden;
+        cursor: pointer;
+        text-align: center;
+
+        &.hide {
+          display: none;
+        }
+
+        & > img {
+          border-style: none;
+          display: inline-block;
+          position: relative;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        & > i {
+          position: absolute;
+          display: block;
+          bottom: 0.6912rem;
+          right: 0.55467rem;
+          width: 1.96267rem;
+          height: 1.96267rem;
+          background-image: url(//s1.hdslb.com/bfs/static/mult/images/TV-Play.png);
+          background-size: 100% auto;
+        }
+      }
+
+      .state-icon {
+        position: absolute;
+        display: block;
+        opacity: 0.85;
+        bottom: 2.39787rem;
+        right: 0.49067rem;
+        width: 1.96267rem;
+        height: 1.96267rem;
+        margin-left: -1.93321rem;
+        margin-top: -1.93321rem;
+        z-index: 2;
+
+        i {
+          font-family: playerIcons;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 3.86645rem;
+          text-align: center;
+          color: #fff;
+          font-size: 5.33299rem;
+          list-style: none;
+          display: none;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+
+          &.buff-icon {
+            background-repeat: no-repeat;
+            background-image: url(//static.hdslb.com/images/loading.gif);
+            background-position: 50%;
+            background-size: 1.36533rem 1.36533rem;
+          }
+
+          &.pause-icon {
+            ackground-repeat: no-repeat;
+            background-image: url(//s1.hdslb.com/bfs/static/mult/images/TV-Play.png);
+            background-size: 100% auto;
+          }
+
+          &.play-icon {
+            background-repeat: no-repeat;
+            background-image: url(//s1.hdslb.com/bfs/static/mult/images/TV-Pause.png);
+            background-size: 100% auto;
+          }
+
+          &.active {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}

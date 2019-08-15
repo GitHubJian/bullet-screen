@@ -3,6 +3,7 @@ import Timer from './timer.js'
 import Point from './point.js'
 
 function result(p) {
+  debugger
   this.b = p
   this.p = new Point(p)
 }

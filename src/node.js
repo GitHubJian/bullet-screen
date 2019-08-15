@@ -9,8 +9,15 @@ function Node(val, s) {
   this.b = s
   this.height = this.width = 0
   this.canvas = null
-  this.bottom = this.y = this.x = this.speed = this.ea = this.end = this.start = 0
+  this.bottom = 0
+  this.y = 0
+  this.x = 0
+  this.speed = 0
+  this.ea = 0
+  this.end = 0
+  this.start = 0
   this.index = 16777215
+
   this.Ha()
 }
 
@@ -22,6 +29,8 @@ Node.prototype.Ha = function() {
   this.width = params.width
   this.height = params.height
   this.Fa()
+  
+  debugger
   if (1 == this.f.mode) {
     this.Ea()
     this.ea = this.start + this.b.width / this.speed
@@ -116,7 +125,7 @@ Node.sa = function(chart) {
 
 Node.Ga = function(n, d) {
   var container = doc.createElement('div')
-
+  debugger
   container.style.cssText =
     'position: absolute; display: inline-block; white-space: pre; left: ' +
     (d.e.offsetWidth - 1) +
@@ -144,6 +153,7 @@ Node.za = function(overlay, new_left, new_top) {
 }
 
 Node.ya = function(options, end, height, pos) {
+  debugger
   if (!options.Oa) {
     options.Oa = true
     options.canvas.style.left = end + 'px'
@@ -164,7 +174,7 @@ Node.ya = function(options, end, height, pos) {
         )
       }
 
-      options.canvas.style.cssText += [end('-webkit'), end('')].join('')
+      options.canvas.style.cssText += [end('-webkit-'), end('')].join('')
     }
   }
 }

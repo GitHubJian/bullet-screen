@@ -1,7 +1,7 @@
-function Connection(options, url, flipTables, emptyChar2null) {
+function Connection(options, createWSUrl, flipTables, emptyChar2null) {
   this.ta = options
-  this.Sa =
-    url ||
+  this.createWSUrl =
+    createWSUrl ||
     function(canCreateDiscussions) {
       return 'ws://wschat.bilibili.com:8088/' + canCreateDiscussions
     }
@@ -27,7 +27,7 @@ Connection.prototype.ba = function() {
   var f = this
   this.G = false
 
-  this.A = new this.WebSocket(this.Sa(this.ta))
+  this.A = new this.WebSocket(this.createWSUrl(this.ta))
   this.A.onmessage = function(message) {
     f.La(message.data)
   }

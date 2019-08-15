@@ -1,13 +1,29 @@
 import Stage from './stage.js'
+import dom from './dom.js'
+import sliderCtrl from './sliderCtrl.js'
 
-function baseIsEqual(obj) {
-  return typeof obj
-}
+var type =
+  'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+    ? function(v) {
+        return typeof v
+      }
+    : function(o) {
+        return o &&
+          'function' == typeof Symbol &&
+          o.constructor === Symbol &&
+          o !== Symbol.prototype
+          ? 'symbol'
+          : typeof o
+      }
 
-function fn(elem, value) {
+function player(elem, options) {
   this.options = {
     send_cmt_url: '//corpcmt.hdslb.net/post',
     get_cmt_url: null
+  }
+
+  if ('object' === (void 0 === options ? 'undefined' : type(options))) {
+    this.options = Object.assign({}, this.options, options)
   }
 
   if (this.options.cmt_url && this.options.cmt_url.match(/[\d*]/g)) {
@@ -16,8 +32,8 @@ function fn(elem, value) {
 
   this.elem = elem
 
-  this.screen_state = fn.UI_NORMAL
-  this.video_state = fn.V_IDEL
+  this.screen_state = player.UI_NORMAL
+  this.video_state = player.V_IDEL
   this.control_bar_visible = true
   this.control_bar_timer = null
   this.control_bar_timer_delay = 3e3
@@ -28,39 +44,40 @@ function fn(elem, value) {
   this.volume = 1
   this.currentTime = 0
   this.duration = 0
-  this.live_mode = value.live
+  this.live_mode = options.live
+
   this.init_ui(this.options)
-  this.start_video = this.start_video
 
   this.random = Math.floor(1e5 * Math.random())
   this.hidePlayIcon = false
+
   this.ws()
 }
 
-fn.UI_NORMAL = 0
-fn.UI_WIDE = 1
-fn.UI_FULL = 2
-fn.V_IDEL = 0
-fn.V_READY = 1
-fn.V_BUFF = 2
-fn.V_PLAY = 3
-fn.V_PAUSE = 4
-fn.V_COMPLETE = 5
-fn.V_CANPLAY = 6
-fn.V_PLAYING = 7
-fn.E_VIDEO_READY = 'ready'
-fn.E_VIDEO_PLAY = 'video_media_play'
-fn.E_VIDEO_PAUSE = 'video_media_pause'
-fn.E_VIDEO_LOADSTART = 'video_media_loadstart'
-fn.E_VIDEO_CANPLAY = 'video_media_canplay'
-fn.E_VIDEO_WAITING = 'video_media_waiting'
-fn.E_VIDEO_ENDED = 'video_media_ended'
-fn.E_VIDEO_ERROR = 'video_media_error'
-fn.E_VIDEO_LOADED = 'video_media_loaded'
-fn.E_VIDEO_SEEK = 'video_media_seek'
-fn.E_VIDEO_TIME = 'video_media_time'
+player.UI_NORMAL = 0
+player.UI_WIDE = 1
+player.UI_FULL = 2
+player.V_IDEL = 0
+player.V_READY = 1
+player.V_BUFF = 2
+player.V_PLAY = 3
+player.V_PAUSE = 4
+player.V_COMPLETE = 5
+player.V_CANPLAY = 6
+player.V_PLAYING = 7
+player.E_VIDEO_READY = 'ready'
+player.E_VIDEO_PLAY = 'video_media_play'
+player.E_VIDEO_PAUSE = 'video_media_pause'
+player.E_VIDEO_LOADSTART = 'video_media_loadstart'
+player.E_VIDEO_CANPLAY = 'video_media_canplay'
+player.E_VIDEO_WAITING = 'video_media_waiting'
+player.E_VIDEO_ENDED = 'video_media_ended'
+player.E_VIDEO_ERROR = 'video_media_error'
+player.E_VIDEO_LOADED = 'video_media_loaded'
+player.E_VIDEO_SEEK = 'video_media_seek'
+player.E_VIDEO_TIME = 'video_media_time'
 
-fn.isFullscreen = function() {
+player.isFullscreen = function() {
   return (
     null !=
     (document.webkitFullscreenElement ||
@@ -70,7 +87,7 @@ fn.isFullscreen = function() {
   )
 }
 
-fn.requestFullscreen = function(elem) {
+player.requestFullscreen = function(elem) {
   ;(
     elem.webkitRequestFullScreen ||
     elem.requestFullScreen ||
@@ -80,7 +97,7 @@ fn.requestFullscreen = function(elem) {
   ).apply(elem)
 }
 
-fn.exitFullscreen = function() {
+player.exitFullscreen = function() {
   if (document.exitFullscreen) {
     document.exitFullscreen()
   } else {
@@ -94,49 +111,49 @@ fn.exitFullscreen = function() {
   }
 }
 
-fn.prototype.constructor = fn
+player.prototype.constructor = player
 
-fn.prototype.play = function() {
+player.prototype.play = function() {
   this.play_video()
 }
 
-fn.prototype.seek = function(e) {
+player.prototype.seek = function(e) {
   this.seek_video(e)
 }
 
-fn.prototype.pause = function() {
+player.prototype.pause = function() {
   this.pause_video()
 }
 
-fn.prototype.getDuration = function() {
+player.prototype.getDuration = function() {
   return this.video_duration()
 }
 
-fn.prototype.isFullScreen = function() {
-  return fn.isFullscreen()
+player.prototype.isFullScreen = function() {
+  return player.isFullscreen()
 }
 
-fn.prototype.init_ui = function(data) {
-  var result = this
+player.prototype.init_ui = function(data) {
+  var self = this
   data = data || {}
 
   function release(device) {
-    result.on_fullscreen_change(device)
+    self.on_fullscreen_change(device)
   }
 
   this.elem.querySelector('.btn-widescreen').onclick = function() {
-    if (result.screen_state !== fn.UI_WIDE) {
-      result.to_wide_screen()
+    if (self.screen_state !== player.UI_WIDE) {
+      self.to_wide_screen()
     } else {
-      result.to_normal_screen()
+      self.to_normal_screen()
     }
   }
 
   this.elem.querySelector('.btn-fullscreen').onclick = function() {
-    if (result.screen_state !== fn.UI_FULL) {
-      result.to_full_screen()
+    if (self.screen_state !== player.UI_FULL) {
+      self.to_full_screen()
     } else {
-      result.to_normal_screen()
+      self.to_normal_screen()
     }
   }
 
@@ -146,87 +163,102 @@ fn.prototype.init_ui = function(data) {
   document.addEventListener('fullscreenchange', release, false)
 
   this.elem.querySelector('.display').onmousemove = function(event) {
-    result.on_display_mousemove(event)
+    self.on_display_mousemove(event)
   }
 
   this.elem.querySelector('.display').onclick = function(e) {
-    result.on_display_click(e)
+    self.on_display_click(e)
   }
 
   this.elem.querySelector('.control-bar').onclick = function(branch) {
-    if (result.get_video_state() === fn.V_PLAY) {
-      result.set_control_bar_visible(false, result.control_bar_timer_delay)
+    if (self.get_video_state() === player.V_PLAY) {
+      self.set_control_bar_visible(false, self.control_bar_timer_delay)
     }
   }
 
   this.elem.querySelector('.btn-play').onclick = function(edge) {
     if (i.hasClass('hide')) {
-      result.on_play_btn_click(edge)
+      self.on_play_btn_click(edge)
     } else {
       i.click()
     }
   }
 
   this.elem.querySelector('.btn-pause').onclick = function(edge) {
-    result.on_pause_btn_click(edge)
+    self.on_pause_btn_click(edge)
   }
 
   this.elem.querySelector('.btn-comment').onclick = function(edge) {
-    result.on_comment_btn_click(edge)
+    self.on_comment_btn_click(edge)
   }
 
   this.elem.querySelector('.btn-repeat').onclick = function(edge) {
-    result.on_repeat_btn_click(edge)
+    self.on_repeat_btn_click(edge)
   }
 
   this.elem.querySelector('.btn-mute').onclick = function(edge) {
-    result.on_mute_btn_click(edge)
+    self.on_mute_btn_click(edge)
   }
 
   this.elem.querySelector('.btn-unmute').onclick = function(edge) {
-    result.on_unmute_btn_click(edge)
+    self.on_unmute_btn_click(edge)
   }
 
   this.elem.querySelector('.send-btn').onclick = function(event) {
-    result.on_send_btn_click(event)
+    self.on_send_btn_click(event)
   }
 
   this.elem.querySelector('.text-input').onkeypress = function(event) {
     if (13 === event.which) {
-      return result.on_send_btn_click(event), false
+      return self.on_send_btn_click(event), false
     }
   }
 
-  this.sliderCtrl
+  this.sliderCtrl = new sliderCtrl({
+    parent: this.elem.querySelector('.control-slider'),
+    upLayer: this.elem.querySelector('.display'),
+    onChange: function(v) {
+      self.on_slider_seek(v)
+    }
+  })
 
-  this.volumeCtrl
+  this.volumeCtrl = new sliderCtrl({
+    parent: this.elem.querySelector('.control-volume-slider'),
+    upLayer: this.elem.querySelector('.control-volume-slider'),
+    liveDragging: true,
+    onChange: function(v) {
+      result.on_volume_slider_seek(v)
+    },
+    value: 100 * this.volume
+  })
 
-  var i = result.elem.querySelector('.load-layer')
+  var loadLayer = self.elem.querySelector('.load-layer')
   data.video_url
-    ? (data.img && i.querySelector('img').setAttribute('src', data.img),
-      (i.onclick = function() {
-        result.start_video()
+    ? (data.img && loadLayer.querySelector('img').setAttribute('src', data.img),
+      (loadLayer.onclick = function() {
+        self.start_video()
       }))
-    : i.classList.add('hide')
+    : loadLayer.classList.add('hide')
 
   if (data.preload) {
     var element = this.elem.querySelector('video')
     if ('audio' === data.type) {
       element = this.elem.querySelector('audio')
     }
-    var r = document.createElement('source')
-    Object(self.a)(r, element)
-    r.setAttribute('src', data.video_url)
-    r.setAttribute('type', data.video_type)
+
+    var source = document.createElement('source')
+    dom.appendTo(source, element)
+    source.setAttribute('src', data.video_url)
+    source.setAttribute('type', data.video_type)
     this.video = element
 
     element.addEventListener(
       'play',
       function() {
-        if (result.options.eventBus) {
-          result.options.eventBus.dispatch(fn.E_VIDEO_PLAY)
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_PLAY)
         }
-        result.on_video_play(element)
+        self.on_video_play(element)
       },
       {
         passive: true
@@ -234,69 +266,310 @@ fn.prototype.init_ui = function(data) {
     )
 
     element.addEventListener('playing', function() {
-      result.on_video_playing(element)
+      self.on_video_playing(element)
     })
 
-    element.addEventListener('pause', function() {})
+    element.addEventListener('pause', function() {
+      if (self.options.eventBus) {
+        self.options.eventBus.dispatch(player.E_VIDEO_PAUSE)
+      }
+      self.on_video_pause(element)
+    })
 
-    element.addEventListener('waiting', function() {})
+    element.addEventListener(
+      'waiting',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_WAITING)
+        }
+        self.on_video_waiting(element)
+      },
+      {
+        passive: true
+      }
+    )
 
-    element.addEventListener('loadstart', function() {})
+    element.addEventListener(
+      'loadstart',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_LOADSTART)
+        }
+        self.on_video_loadstart(element)
+      },
+      {
+        passive: true
+      }
+    )
 
-    element.addEventListener('canplay', function() {})
+    element.addEventListener('canplay', function() {
+      if (self.options.eventBus) {
+        self.options.eventBus.dispatch(player.E_VIDEO_CANPLAY)
+      }
+      self.on_video_canplay(element)
+    })
 
-    element.addEventListener('ended', function() {})
+    element.addEventListener(
+      'ended',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_ENDED)
+        }
+        self.on_video_ended(element)
+      },
+      {
+        passive: true
+      }
+    )
 
-    element.addEventListener('loadeddata', function() {})
+    element.addEventListener(
+      'loadeddata',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_LOADED)
+        }
+      },
+      {
+        passive: true
+      }
+    )
 
-    element.addEventListener('error', function() {})
+    element.addEventListener(
+      'error',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_ERROR)
+        }
+      },
+      {
+        passive: true
+      }
+    )
 
-    element.addEventListener('timeupdate', function() {})
+    element.addEventListener(
+      'timeupdate',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_TIME)
+        }
+      },
+      {
+        passive: true
+      }
+    )
 
-    element.addEventListener('seeking', function() {})
+    element.addEventListener(
+      'seeking',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_SEEK)
+        }
+      },
+      {
+        passive: true
+      }
+    )
+  }
+
+  if (/iPad/.test(window.navigator.userAgent)) {
+    self.elem.querySelector('.btn-mute').classList.add('hide')
+    self.elem.querySelector('.control-volume-slider').classList.add('hide')
+    self.elem.querySelector('.btn-fullscreen').classList.add('hide')
+    self.elem.querySelector('.control-bar').classList.add('ipad')
+  } else {
+    self.elem.querySelector('.btn-mute').classList.add('hide')
+    self.elem.querySelector('.control-volume-slider').classList.add('hide')
+    self.elem.querySelector('.btn-fullscreen').classList.add('hide')
+    self.elem.querySelector('.btn-repeat').classList.add('hide')
   }
 }
 
-fn.prototype.init_video = function() {}
+player.prototype.init_video = function(url, type, preload) {
+  url = url || ''
+  type = type || 'video/mp4'
 
-fn.prototype.on_video_play = function() {
-  this.set_video_state(fn.V_PLAY)
-}
+  var self = this
+  var element = this.elem.querySelector('video')
 
-fn.prototype.on_video_playing = function() {
-  this.set_video_state(fn.V_PLAYING)
-}
+  'audio' === this.options.type && (element = this.elem.querySelector('audio'))
+  this.video = element
 
-fn.prototype.on_video_pause = function() {
-  this.set_video_state(fn.V_PAUSE)
-}
+  if (!preload) {
+    this.play_video()
+    var source = document.createElement('source')
+    dom.appendTo(source, element)
 
-fn.prototype.on_video_waiting = function() {
-  this.set_video_state(fn.V_BUFF)
-}
+    source.setAttribute('src', url)
+    source.setAttribute('type', type)
 
-fn.prototype.on_video_loadstart = function() {
-  this.set_video_state(fn.V_BUFF)
-}
-
-fn.prototype.on_video_canplay = function() {
-  this.set_video_state(fn.V_CANPLAY)
-}
-
-fn.prototype.on_video_ended = function() {
-  this.set_video_state(fn.V_COMPLETE)
-}
-
-fn.prototype.set_video_state = function(macro) {
-  var presetItemClicked = this.video_state
-  if (presetItemClicked !== macro && this.elem.querySelector('.state-icon i')) {
-    switch (
-      (this.elem.querySelector('.state-icon i').classList.remove('active'),
-      macro)
-    ) {
-      case fn.V_READY:
+    element.addEventListener(
+      'play',
+      function() {
         if (this.options.eventBus) {
-          this.options.eventBus.dispatch(fn.E_VIDEO_READY, {
+          self.options.eventBus.dispatch(player.E_VIDEO_PLAY)
+        }
+        self.on_video_play(element)
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener('playing', function() {
+      self.on_video_playing(element)
+    })
+
+    element.addEventListener(
+      'pause',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_PAUSE)
+        }
+        self.on_video_pause(element)
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener(
+      'waiting',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_WAITING)
+        }
+        self.on_video_waiting(element)
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener(
+      'loadstart',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(player.E_VIDEO_LOADSTART)
+        }
+        self.on_video_loadstart(element)
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener('canplay', function() {
+      if (self.options.eventBus) {
+        self.options.eventBus.dispatch(fn.E_VIDEO_CANPLAY)
+      }
+      self.on_video_canplay(element)
+    })
+
+    element.addEventListener(
+      'ended',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(fn.E_VIDEO_ENDED)
+        }
+        self.on_video_ended(element)
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener(
+      'loadeddata',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(fn.E_VIDEO_LOADED)
+        }
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener(
+      'error',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(fn.E_VIDEO_ERROR)
+        }
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener(
+      'timeupdate',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(fn.E_VIDEO_TIME)
+        }
+      },
+      {
+        passive: true
+      }
+    )
+
+    element.addEventListener(
+      'seeking',
+      function() {
+        if (self.options.eventBus) {
+          self.options.eventBus.dispatch(fn.E_VIDEO_SEEK)
+        }
+      },
+      {
+        passive: true
+      }
+    )
+  }
+
+  this.timer = setInterval(function() {
+    self.on_timer_interval()
+  }, 100)
+
+  this.set_video_state(player.V_READY)
+}
+
+player.prototype.on_video_play = function() {
+  this.set_video_state(player.V_PLAY)
+}
+
+player.prototype.on_video_playing = function() {
+  this.set_video_state(player.V_PLAYING)
+}
+
+player.prototype.on_video_pause = function() {
+  this.set_video_state(player.V_PAUSE)
+}
+
+player.prototype.on_video_waiting = function() {
+  this.set_video_state(player.V_BUFF)
+}
+
+player.prototype.on_video_loadstart = function() {
+  this.set_video_state(player.V_BUFF)
+}
+
+player.prototype.on_video_canplay = function() {
+  this.set_video_state(player.V_CANPLAY)
+}
+
+player.prototype.on_video_ended = function() {
+  this.set_video_state(player.V_COMPLETE)
+}
+
+player.prototype.set_video_state = function(state) {
+  var presetItemClicked = this.video_state
+  if (presetItemClicked !== state && this.elem.querySelector('.state-icon i')) {
+    this.elem.querySelector('.state-icon i').classList.remove('active')
+    switch (state) {
+      case player.V_READY:
+        if (this.options.eventBus) {
+          this.options.eventBus.dispatch(player.E_VIDEO_READY, {
             play: this.play.bind(this),
             pause: this.pause.bind(this),
             seek: this.seek.bind(this),
@@ -305,7 +578,7 @@ fn.prototype.set_video_state = function(macro) {
           })
         }
         break
-      case fn.V_PLAY:
+      case player.V_PLAY:
         this.elem.querySelector('.btn-play').classList.add('hide')
         this.elem.querySelector('.btn-pause').classList.remove('hide')
         this.elem.querySelector('.player-box').classList.add('full')
@@ -324,7 +597,7 @@ fn.prototype.set_video_state = function(macro) {
         }
         this.stage.play()
         break
-      case fn.V_PAUSE:
+      case player.V_PAUSE:
         this.elem.querySelector('.btn-pause').classList.add('hide')
         this.elem.querySelector('.btn-play').classList.remove('hide')
         this.elem
@@ -335,7 +608,7 @@ fn.prototype.set_video_state = function(macro) {
           .classList.remove('active')
         this.stage.pause()
         break
-      case fn.V_BUFF:
+      case player.V_BUFF:
         if (void 0 === this.firstBuff) {
           /** @type {boolean} */
           this.firstBuff = true
@@ -347,13 +620,13 @@ fn.prototype.set_video_state = function(macro) {
           .querySelector('.state-icon i.buff-icon')
           .classList.add('active')
         break
-      case fn.V_COMPLETE:
+      case player.V_COMPLETE:
         this.elem
           .querySelector('.state-icon i.pause-icon')
           .classList.add('active')
         break
-      case fn.V_CANPLAY:
-        if (Object(self.e)('.load-layer', 'hide')) {
+      case player.V_CANPLAY:
+        if (dom.hasClass('.load-layer', 'hide')) {
           this.elem.querySelector('.load-layer').click()
         }
         this.elem.querySelector('.btn-play').classList.add('hide')
@@ -374,7 +647,7 @@ fn.prototype.set_video_state = function(macro) {
           this.set_control_bar_visible(false, this.control_bar_timer_delay)
         }
         break
-      case fn.V_PLAYING:
+      case player.V_PLAYING:
         this.set_control_bar_visible(false)
         this.elem
           .querySelector('.state-icon i.play-icon')
@@ -383,40 +656,101 @@ fn.prototype.set_video_state = function(macro) {
           .querySelector('.state-icon i.pause-icon')
           .classList.remove('active')
     }
-    if (macro !== fn.V_PLAY) {
+    if (state !== player.V_PLAY) {
       this.elem.querySelector('.player-box').classList.remove('full')
       this.set_control_bar_visible(true)
     }
     /** @type {number} */
-    this.video_state = macro
+    this.video_state = state
+
     this.on_state_change(this.video_state, presetItemClicked)
   }
 }
 
-fn.prototype.on_state_change = function(obj, event) {
+player.prototype.on_state_change = function(obj, event) {
   if (this.options.on_state_change) {
     this.options.on_state_change(obj, event)
   }
 }
 
-fn.prototype.get_video_state = function() {
+player.prototype.get_video_state = function() {
   return this.video_state
 }
 
-fn.prototype.start_video = function() {}
+player.prototype.start_video = function() {
+  var self = this
+  var options = this.options
+  this.elem.querySelector('.load-layer').classList.add('hide')
+  this.init_video(options.video_url, options.video_type, options.preload)
+  this.init_comment()
 
-fn.prototype.pause_video = function() {
+  if (!this.options.autoplay) {
+    this.play_video()
+  }
+
+  if (!('audio' === this.options.type)) {
+    this.elem.querySelector('video').classList.add('show')
+    this.elem.querySelector('video').style.display = 'inline'
+  }
+
+  this.set_control_bar_visible(false)
+
+  dom.addEvent(
+    this.elem.querySelector('.state-icon i.play-icon'),
+    'click',
+    function() {
+      if (dom.hasClass(this, 'active')) {
+        self.pause_video()
+      }
+    }
+  )
+
+  dom.addEvent(
+    this.elem.querySelector('.state-icon i.pause-icon'),
+    'click',
+    function() {
+      self.play_video()
+    }
+  )
+}
+
+player.prototype.pause_video = function() {
   var video = this.video
   if (video) {
     video.pause()
   }
 }
 
-fn.prototype.set_duration = function(d) {
+player.prototype.play_video = function() {
+  var video = this.video
+  var userAgent = window.navigator.userAgent
+  var media = document.querySelectorAll('video')
+
+  if (video) {
+    if (
+      userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) ||
+      userAgent.indexOf('iPad') > -1
+    ) {
+      var i = 0
+      for (; i < media.length; i++) {
+        media[i].pause()
+      }
+    }
+
+    video.play()
+
+    if (!this.tracked && this.options.track) {
+      this.tracked = true
+      this.send_track()
+    }
+  }
+}
+
+player.prototype.set_duration = function(d) {
   this.duration = d
 }
 
-fn.prototype.seek_video = function(t) {
+player.prototype.seek_video = function(t) {
   if (this.video) {
     t = Math.max(0, t)
     if (!this.options.max_duration) {
@@ -428,34 +762,34 @@ fn.prototype.seek_video = function(t) {
   }
 }
 
-fn.prototype.set_volume = function(value) {
+player.prototype.set_volume = function(value) {
   this.volume = value
   if (this.video) {
     this.video.volume = value
   }
 }
 
-fn.prototype.video_time = function() {
+player.prototype.video_time = function() {
   return this.currentTime
 }
 
-fn.prototype.video_duration = function() {
+player.prototype.video_duration = function() {
   return this.duration
 }
 
-fn.prototype.on_timer_interval = function() {
+player.prototype.on_timer_interval = function() {
   this.update_time(this.video.currentTime, this.video.duration)
 }
 
-fn.prototype.on_slider_seek = function(template) {
+player.prototype.on_slider_seek = function(template) {
   this.seek_video(template)
 }
 
-fn.prototype.on_volume_slider_seek = function(a) {
+player.prototype.on_volume_slider_seek = function(a) {
   this.set_volume(a / 100)
 }
 
-fn.prototype.update_time = function(value, duration) {
+player.prototype.update_time = function(value, duration) {
   if (duration != this.duration) {
     this.maxDuration =
       this.options.max_duration > 0
@@ -469,7 +803,7 @@ fn.prototype.update_time = function(value, duration) {
       Math.floor(d) !== Math.floor(this.maxDuration) &&
       this.elem.querySelector('.time-total-text')
     ) {
-      this.elem.querySelector('.time-total-text').innerText = Object(self.c)(
+      this.elem.querySelector('.time-total-text').innerText = dom.formatTime(
         this.maxDuration
       )
     }
@@ -489,22 +823,22 @@ fn.prototype.update_time = function(value, duration) {
     this.currentTime = value
     this.sliderCtrl.setValue(value, false)
     if (Math.floor(t) !== Math.floor(value)) {
-      this.elem.querySelector('.time-current-text').innerText = Object(self.c)(
+      this.elem.querySelector('.time-current-text').innerText = dom.formatTime(
         value > this.maxDuration ? this.maxDuration : value
       )
     }
   }
 }
 
-fn.prototype.to_wide_screen = function() {
+player.prototype.to_wide_screen = function() {
   switch (this.screen_state) {
-    case fn.UI_NORMAL:
+    case player.UI_NORMAL:
       this.elem.querySelector('.player-box').classList.add('wide')
       break
-    case fn.UI_FULL:
+    case player.UI_FULL:
       this.elem.querySelector('.player-box').classList.remove('full')
       this.set_control_bar_visible(true)
-      fn.exitFullscreen()
+      player.exitFullscreen()
   }
 
   try {
@@ -513,41 +847,65 @@ fn.prototype.to_wide_screen = function() {
 
   this.elem.querySelector('.btn-widescreen').classList.add('active')
   /** @type {number} */
-  this.screen_state = fn.UI_WIDE
+  this.screen_state = player.UI_WIDE
   this.comment_stage_resize()
 }
 
-fn.prototype.to_normal_screen = function() {}
+player.prototype.to_normal_screen = function() {}
 
-fn.prototype.to_full_screen = function() {}
+player.prototype.to_full_screen = function() {}
 
-fn.prototype.on_fullscreen_change = function() {}
+player.prototype.on_fullscreen_change = function() {}
 
-fn.prototype.on_display_mousemove = function() {}
+player.prototype.on_display_mousemove = function() {}
 
-fn.prototype.on_display_click = function() {}
+player.prototype.on_display_click = function() {}
 
-fn.prototype.on_play_btn_click = function() {}
+player.prototype.on_play_btn_click = function() {}
 
-fn.prototype.on_send_btn_click = function() {}
+player.prototype.on_send_btn_click = function() {}
 
-fn.prototype.on_keydown = function() {}
+player.prototype.on_keydown = function() {}
 
-fn.prototype.on_pause_btn_click = function() {}
+player.prototype.on_pause_btn_click = function() {}
 
-fn.prototype.on_share_btn_click = function() {}
+player.prototype.on_share_btn_click = function() {}
 
-fn.prototype.on_comment_btn_click = function() {}
+player.prototype.on_comment_btn_click = function() {}
 
-fn.prototype.on_repeat_btn_click = function() {}
+player.prototype.on_repeat_btn_click = function() {}
 
-fn.prototype.on_mute_btn_click = function() {}
+player.prototype.on_mute_btn_click = function() {}
 
-fn.prototype.on_unmute_btn_click = function() {}
+player.prototype.on_unmute_btn_click = function() {}
 
-fn.prototype.set_control_bar_visible = function() {}
+player.prototype.set_control_bar_visible = function(status, delay) {
+  var self = this
+  clearTimeout(this.control_bar_timer)
 
-fn.prototype.init_comment = function() {
+  if (status !== this.control_bar_visible) {
+    if (status) {
+      this.elem.querySelector('.control-bar').classList.remove('hide')
+      this.elem.querySelector('.state-icon').classList.remove('hide')
+
+      this.control_bar_visible = true
+    } else {
+      if (this.hidePlayIcon) {
+        this.hidePlayIcon = false
+      } else {
+        this.elem.querySelector('.state-icon').classList.remove('hide')
+      }
+
+      this.control_bar_timer = setTimeout(function() {
+        self.elem.querySelector('.control-bar').classList.add('hide')
+        self.elem.querySelector('.state-icon').classList.add('hide')
+        self.control_bar_visible = false
+      }, delay || 0)
+    }
+  }
+}
+
+player.prototype.init_comment = function() {
   var self = this
   var data = {
     width: this.elem.offsetWidth,
@@ -568,17 +926,19 @@ fn.prototype.init_comment = function() {
   stage.config().attachVideoElement(this.video)
   stage.config().setGetStateFunc(void 0)
 
-  var block = self.options.cmt_url || ''
+  var cmtFileUri = self.options.cmt_url || ''
+
   if (self.options.get_cmt_url) {
     /** @type {string} */
-    block = self.options.get_cmt_url + self.options.cid + '.xml'
+    cmtFileUri = self.options.get_cmt_url + self.options.cid + '.xml'
   }
+
   if (this.live_mode) {
     stage.config().setLiveMode(true)
     stage.connect(
-      block,
-      function(selectedHostFolder) {
-        self.stage.addCmt(selectedHostFolder)
+      cmtFileUri,
+      function(comment) {
+        self.stage.addCmt(comment)
       },
       null,
       function(value) {
@@ -610,14 +970,10 @@ fn.prototype.init_comment = function() {
       }
     )
   } else {
-    stage.loadCmtFile(block, function(originalBaseURL) {
+    stage.loadCmtFile(cmtFileUri, function(url) {
       return self.options.get_cmt_url
-        ? originalBaseURL
-        : originalBaseURL.replace(/comment\.bilibili\.[^\/]+/, function(
-            canCreateDiscussions,
-            isSlidingUp,
-            n
-          ) {
+        ? url
+        : url.replace(/comment\.bilibili\.[^\/]+/, function() {
             return 'comment.bilibili.com'
           })
     })
@@ -626,14 +982,14 @@ fn.prototype.init_comment = function() {
   stage.play()
 }
 
-fn.prototype.comment_stage_resize = function() {
+player.prototype.comment_stage_resize = function() {
   if (!this.stage) {
     return false
   }
   this.stage.resize(this.elem.offsetWidth, this.elem.offsetHeight)
 }
 
-fn.prototype.send_comment = function(value, n, func) {
+player.prototype.send_comment = function(value, n, func) {
   var sharedString
   var HeadsetColor
 
@@ -703,7 +1059,7 @@ fn.prototype.send_comment = function(value, n, func) {
   }
 }
 
-fn.prototype.getCookie = function(name) {
+player.prototype.getCookie = function(name) {
   try {
     var string = '' + document.cookie
     var i = string.indexOf(name + '=')
@@ -720,7 +1076,7 @@ fn.prototype.getCookie = function(name) {
   }
 }
 
-fn.prototype.ws = function() {
+player.prototype.ws = function() {
   var data = {
     WS_OP_HEARTBEAT: 2,
     WS_OP_HEARTBEAT_REPLY: 3,
@@ -791,7 +1147,7 @@ fn.prototype.ws = function() {
       var array = new Uint8Array(a.byteLength + b.byteLength)
 
       array.set(a, 0)
-      array.set(b.a.byteLength)
+      array.set(b, a.byteLength)
 
       return array.buffer
     }
@@ -811,8 +1167,8 @@ fn.prototype.ws = function() {
     }
 
     connect.prototype.getEncoder = function() {
-      return window.TextDecoder
-        ? new window.TextDecoder()
+      return window.TextEncoder
+        ? new window.TextEncoder()
         : {
             encode: function(text) {
               var data = new ArrayBuffer(text.length)
@@ -845,6 +1201,7 @@ fn.prototype.ws = function() {
 
         var result = new ArrayBuffer(data.WS_PACKAGE_HEADER_TOTAL_LENGTH)
         var view = new DataView(result, 0)
+        debugger
         var options = self.getEncoder().encode(id)
 
         view.setInt32(
@@ -929,9 +1286,11 @@ fn.prototype.ws = function() {
     uid: parseInt(this.getCookie('DedeUserID')),
     cid: parseInt(this.options.cid)
   })
+
+  this.websocket.connect()
 }
 
-fn.prototype.send_track = function() {
+player.prototype.send_track = function() {
   var pageOptimizer = this
   var data = {
     aid: this.options.aid,
@@ -972,7 +1331,7 @@ fn.prototype.send_track = function() {
     })
 }
 
-fn.prototype.get_system_time = function(data) {
+player.prototype.get_system_time = function(data) {
   var pageOptimizer = this
   action.a
     .get('//api.bilibili.com/x/report/click/now', {
@@ -997,7 +1356,7 @@ fn.prototype.get_system_time = function(data) {
     })
 }
 
-fn.prototype.send_report_click = function(success) {
+player.prototype.send_report_click = function(success) {
   action.a.post(
     '//api.bilibili.com/x/report/click/h5',
     store.a.stringify(success),
@@ -1006,3 +1365,5 @@ fn.prototype.send_report_click = function(success) {
     }
   )
 }
+
+export default player

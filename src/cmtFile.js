@@ -1,12 +1,12 @@
-function module() {
+function cmtFile() {
   this.i = []
   this.complete = null
   this.ha = 0
 }
 
-module.prototype.constructor = module
+cmtFile.prototype.constructor = cmtFile
 
-module.prototype.parse = function(t) {
+cmtFile.prototype.parse = function(t) {
   if (t) {
     var items = t.getElementsByTagName('data')
     var i = 0
@@ -26,7 +26,7 @@ module.prototype.parse = function(t) {
   }
 }
 
-module.prototype.add = function(type) {
+cmtFile.prototype.add = function(type) {
   var id = type.getElementsByTagName('playTime')[0].textContent
   if (!id) {
     id = type.getElementsByTagName('playTime')[0].text
@@ -54,7 +54,7 @@ module.prototype.add = function(type) {
   })
 }
 
-module.prototype.qa = function(b) {
+cmtFile.prototype.qa = function(b) {
   var p = b.getAttribute('p').split(',')
   var y = b.textContent
   if (!y) {
@@ -74,7 +74,7 @@ module.prototype.qa = function(b) {
   })
 }
 
-module.prototype.load = function(url, convertUrl) {
+cmtFile.prototype.load = function(url, convertUrl) {
   var self = this
   !(function(url, callback) {
     var xhr = new XMLHttpRequest()
@@ -82,7 +82,7 @@ module.prototype.load = function(url, convertUrl) {
     xhr.addEventListener('load', function() {
       var text
       text = xhr.responseText.replace(/[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]/g, '')
-      text = new window.DOMParser().parseFromString(str, 'text/xml')
+      text = new window.DOMParser().parseFromString(text, 'text/xml')
 
       callback(null, text)
     })
@@ -103,14 +103,15 @@ module.prototype.load = function(url, convertUrl) {
       console.log('reTry')
       if (10 > self.ha) {
         self.ha++
+
         setTimeout(function() {
-          self.load(a, convertUrl)
+          self.load(url, convertUrl)
         }, 1e3)
-      } else {
-        self.parse(data)
       }
+    } else {
+      self.parse(data)
     }
   })
 }
 
-export default module
+export default cmtFile
