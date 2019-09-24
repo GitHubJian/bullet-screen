@@ -21,7 +21,9 @@
             r = t.devicePixelRatio || 1,
             d = 540,
             m = 0
-          if (((r = r >= 3 ? 3 : r >= 2 ? 2 : 1), a)) {
+
+          r = r >= 3 ? 3 : r >= 2 ? 2 : 1
+          if (a) {
             var s = a.getAttribute('content')
             if (s) {
               var c = s.match(/initial\-dpr=([\d\.]+)/)
@@ -32,6 +34,7 @@
               u && (m = parseFloat(u[1]))
             }
           }
+          
           e.documentElement.setAttribute('data-dpr', r),
             (i.dpr = r),
             e.documentElement.setAttribute('max-width', d),
@@ -52,40 +55,41 @@
             : ((n = e.createElement('meta')).setAttribute('name', 'viewport'),
               n.setAttribute('content', h),
               e.head.appendChild(n))
-        })(),
-          (i.px2rem = function(t, e) {
-            return (
-              e || (e = parseInt(i.designWidth, 10)),
-              (320 * parseInt(t, 10)) / e / 20
-            )
-          }),
-          (i.rem2px = function(t, e) {
-            return e || (e = parseInt(i.designWidth, 10)), (20 * t * e) / 320
-          }),
-          (i.mresize = function() {
-            var n =
-              e.documentElement.getBoundingClientRect().width || t.innerWidth
-            if (
-              (i.maxWidth && n / i.dpr > i.maxWidth && (n = i.maxWidth * i.dpr),
-              !n)
-            )
-              return !1
-            ;(e.documentElement.style.fontSize = (20 * n) / 320 + 'px'),
-              i.callback && i.callback()
-          }),
-          i.mresize(),
-          t.addEventListener(
-            'resize',
-            function() {
-              clearTimeout(i.tid), (i.tid = setTimeout(i.mresize, 33))
-            },
-            !1
-          ),
-          t.addEventListener('load', i.mresize, !1),
-          setTimeout(function() {
-            i.mresize()
-          }, 333),
-          (t.hotcss = i)
+        })()
+
+        i.px2rem = function(t, e) {
+          return (
+            e || (e = parseInt(i.designWidth, 10)),
+            (320 * parseInt(t, 10)) / e / 20
+          )
+        }
+        i.rem2px = function(t, e) {
+          return e || (e = parseInt(i.designWidth, 10)), (20 * t * e) / 320
+        }
+        i.mresize = function() {
+          var n =
+            e.documentElement.getBoundingClientRect().width || t.innerWidth
+          if (
+            (i.maxWidth && n / i.dpr > i.maxWidth && (n = i.maxWidth * i.dpr),
+            !n)
+          )
+            return !1
+          ;(e.documentElement.style.fontSize = (20 * n) / 320 + 'px'),
+            i.callback && i.callback()
+        }
+        i.mresize()
+        t.addEventListener(
+          'resize',
+          function() {
+            clearTimeout(i.tid), (i.tid = setTimeout(i.mresize, 33))
+          },
+          !1
+        )
+        t.addEventListener('load', i.mresize, !1)
+        setTimeout(function() {
+          i.mresize()
+        }, 333)
+        t.hotcss = i
       })(window, document)
     </script>
   </head>
